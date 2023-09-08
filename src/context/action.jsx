@@ -1,11 +1,12 @@
+import { SEND_MESSAGE, SET_MESSAGE_INPUT } from "./constants"
 
-const setMessage = (payload) => {
+export const setMessage = (payload) => {
     return {
         type: SET_MESSAGE_INPUT,
         payload
     }
 }
-const sendMessage = (payload) => {
+export const sendMessage = (payload) => {
     return {
         type: SEND_MESSAGE,
         payload
