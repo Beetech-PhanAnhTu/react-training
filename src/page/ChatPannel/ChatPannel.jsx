@@ -1,13 +1,18 @@
 import { 
+    StyleFormArea,
     StyleInfoName, 
     StyledBubble, 
+    StyledBubbleRight, 
     StyledButtonSend, 
     StyledChatInput, 
     StyledChatPanel, 
+    StyledHeaderChat, 
     StyledInfo, 
     StyledMainChat, 
     StyledMessImg, 
+    StyledMessImgRight, 
     StyledMessLeft, 
+    StyledMessRight, 
     StyledTime 
 } from "./ChatPannel.styles";
 
@@ -16,10 +21,27 @@ import {
 export function ChatPannel(){
     return (
         <StyledChatPanel>
+            <StyledHeaderChat>
+                <span>User1</span>
+            </StyledHeaderChat>
             <StyledMainChat>
                 <StyledMessLeft>
-                    <StyledMessImg>
-                        <StyledBubble>
+                    <StyledMessImg></StyledMessImg>
+                    <StyledBubble>
+                        <StyledInfo>
+                            <StyleInfoName>
+                                Sajad
+                            </StyleInfoName>
+                            <StyledTime>
+                                12:46
+                            </StyledTime>
+                        </StyledInfo>
+                        <div>Hi, welcome to SimpleChat! Go ahead and send me a message. 😄</div>
+                    </StyledBubble>
+                </StyledMessLeft>
+                <StyledMessRight>
+                <StyledMessImgRight></StyledMessImgRight>
+                    <StyledBubbleRight>
                             <StyledInfo>
                                 <StyleInfoName>
                                     Sajad
@@ -28,15 +50,14 @@ export function ChatPannel(){
                                     12:46
                                 </StyledTime>
                             </StyledInfo>
-                        </StyledBubble>
-                    </StyledMessImg>
-                </StyledMessLeft>
-                {/* <StyledMessRight>
-                    
-                </StyledMessRight> */}
+                        <div>Hi, welcome to SimpleChat! Go ahead and send me a message. 😄</div>
+                    </StyledBubbleRight>
+                </StyledMessRight>
             </StyledMainChat>
-            <StyledChatInput type="text"></StyledChatInput>
-            <StyledButtonSend>send</StyledButtonSend>
+            <StyleFormArea>
+                <StyledChatInput type="text"></StyledChatInput>
+                <StyledButtonSend>send</StyledButtonSend>
+            </StyleFormArea>
         </StyledChatPanel>
     );
 }
