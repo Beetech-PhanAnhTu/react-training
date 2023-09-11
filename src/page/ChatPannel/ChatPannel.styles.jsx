@@ -68,11 +68,6 @@ export const StyledInfo = styled.div`
   margin-bottom: 10px;
 `;
 
-export const StyleInfoName = styled.div`
-  margin-right: 10px;
-  font-weight: bold;
-`;
-
 export const StyledTime = styled.div`
   font-size: 0.85em;
 `;

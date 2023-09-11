@@ -1,28 +1,37 @@
 import axios from "axios";
 import { createContext, useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContextUser = createContext();
 
 export const AuthContextUserProvider = ({children}) => {
-    const [user, setUser] = useState()
+    const [user, setUser] = useState(null)
+    const navigate = useNavigate();
     //login state
     const [userLogin, setUserLogin] = useState({
         email: '',
         password: ''
     });
 
+    useEffect(() => {
+        setUser(JSON.parse(localStorage.getItem('userAuth')))
+    }, []);
+
+    //handle login user
     const HandleLoginUser = useCallback(
         async (e) => {
             e.preventDefault();
+            //call api login
             axios.post('http://localhost:5000/api/users/login', JSON.stringify(userLogin), {
                 headers: {'Content-Type': 'application/json'},
                 withCredentials: true,
                 timeout: 10000
             })
             .then(response => {
-                // Handle successful response
-                localStorage.setItem('userAuth', JSON.stringify(userLogin))
+                // Handle successful response then store user in localStorage, set state response user
+                localStorage.setItem('userAuth', JSON.stringify(response))
                 setUser(response);
+                navigate('/');
             })
             .catch(error => {
                 // Handle error
@@ -36,11 +45,6 @@ export const AuthContextUserProvider = ({children}) => {
             });
         },[userLogin]
       );
-
-    useEffect(() => {
-        console.log("re-render");
-        localStorage.getItem('userAuth', JSON.stringify(user))
-    }, [user]);
 
     return <AuthContextUser.Provider value={{ 
         user,

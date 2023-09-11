@@ -1,8 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import { chatContext, sendMessage, setMessage, useChat } from "./context";
-import Avatar from '@mui/material/Avatar'
 import { styled } from "styled-components";
 import { ChatPannel } from "./page/ChatPannel/ChatPannel";
+import { AuthContextUser } from "./context/AuthContext";
+import { ChatContext } from "./context/ChatContext";
+import UserChat from "./page/ChatPannel/UserChat";
 
 const StyledContainer = styled.div`
 	border-right: 1px solid whitesmoke;
@@ -37,81 +38,30 @@ const StyleListUser = styled.ul`
   padding: 0;
 `;
 
-const StyledItemUser = styled.li`
-    display: flex;
-    height: 80px;
-    position: relative;
-    border-radius: 2px;
-    padding: 10px;
-    margin: 15px 0;
-    background-color: #f0f0f0;
-    box-shadow: 0 1px 3px 0 #707070, 0 1px 1px 0 #adadad;
-    transition: box-shadow 0.15s ease-in-out;
-    margin-left: 15px;
-    margin-right: 15px;
-`;
-
-const StyledAvatarUser = styled.a`
-    display: block;
-    background-repeat: no-repeat;
-    width: 60px;
-    height: 60px;
-    background-size: cover;
-    border-radius: 30px;
-    border: 1px solid #eaeaea;
-    top: 10px;
-    left: 10px;
-    cursor: pointer;
-    background-image: url(https://graph.facebook.com/100006582316470/picture?width=130&height=130);
-`;
-
-const StyledUserChat = styled.div`
-    flex: 1;
-    height: 60px;
-    overflow: hidden;
-    position: relative;
-    margin: 0 5px;
-    cursor: pointer;
-`;
-
-const StyledStatus = styled.div`
-    position: absolute;
-    top: 10px;
-    left: 3px;
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    background-color: #37d316;
-`;
-
-const StyledUserName = styled.div`
-    position: absolute;
-    top: 5px;
-    left: 17px;
-    color: #000;
-    font-size: 1.5em;
-`;
 
 function Content() {
+  const {userChat, updateCurrentChat} = useContext(ChatContext);
+  const {user} = useContext(AuthContextUser);
     return (
         <StyledContainer>
+          {/* sidebar */}
           <StyledSideBar>
-            <StyleListUser>
-              <StyledItemUser>
-                <StyledAvatarUser></StyledAvatarUser>
-                <StyledUserChat>
-                  <StyledStatus></StyledStatus>
-                  <StyledUserName>HEHEHE</StyledUserName>
-                </StyledUserChat>
-              </StyledItemUser>
-            </StyleListUser>
-            
+            {userChat?.data?.length < 1 ? null : (
+                <StyleListUser>
+                    {userChat?.data?.map((chat, index) => (
+                        <div key={index} onClick={() => {updateCurrentChat(chat)}}>
+                            <UserChat chat={chat} user={user}/>
+                        </div>                   
+                    ))}
+                </StyleListUser>
+          )}
           </StyledSideBar>
-
+          {/* sidebar */}
+          {/* mainchat */}
           <StyledMainChat>
             <ChatPannel />
           </StyledMainChat>
-
+          {/* mainchat */}
         </StyledContainer>
     )
 }

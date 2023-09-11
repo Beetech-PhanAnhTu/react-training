@@ -4,6 +4,7 @@ import { Link, Routes, Route } from "react-router-dom";
 import styled from 'styled-components'
 import Login from "./page/Login/Login";
 import { AuthContextUser } from "./context/AuthContext";
+import { ChatContextProvider, ChatContext } from "./context/ChatContext";
 
 const StyledNavBar = styled.ul`
   list-style: none;
@@ -32,19 +33,20 @@ const StyledLink = styled(Link)`
 
 function App() {
   const {user} = useContext(AuthContextUser);
-  console.log(user);
   return (
     <div>
-      <StyledHeader className="App">
-        <StyledNavBar>
-          <StyledItem><StyledLink to="/login">Login</StyledLink></StyledItem>
-          <StyledItem><StyledLink to="/">Chat room</StyledLink></StyledItem>
-        </StyledNavBar>
-      </StyledHeader>
-      <Routes>
-          <Route path="/login" element={user != null ? <Content /> : <Login />}/>
-          <Route path="/" element={user != null ? <Content /> : <Login />}/>
-      </Routes>
+      <ChatContextProvider user={user}>
+        <StyledHeader className="App">
+          <StyledNavBar>
+            <StyledItem><StyledLink to="/login">Login</StyledLink></StyledItem>
+            <StyledItem><StyledLink to="/">Chat room</StyledLink></StyledItem>
+          </StyledNavBar>
+        </StyledHeader>
+        <Routes>
+            <Route path="/login" element={user ? <Content /> : <Login />}/>
+            <Route path="/" element={user ? <Content /> : <Login />}/>
+        </Routes>
+      </ChatContextProvider>
     </div>
   );
 }
