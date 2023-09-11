@@ -46,10 +46,10 @@ function Content() {
         <StyledContainer>
           {/* sidebar */}
           <StyledSideBar>
-            {userChat?.data?.length < 1 ? null : (
+            {userChat?.length < 1 ? null : (
                 <StyleListUser>
                     {userChat?.data?.map((chat, index) => (
-                        <div key={index} onClick={() => {updateCurrentChat(chat)}}>
+                        <div key={index} onClick={() => updateCurrentChat(chat)}>
                             <UserChat chat={chat} user={user}/>
                         </div>                   
                     ))}

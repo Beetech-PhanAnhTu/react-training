@@ -1,47 +1,44 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { 
     StyleFormArea,
     StyledBubble, 
-    StyledBubbleRight, 
     StyledButtonSend, 
     StyledChatInput, 
     StyledChatPanel, 
     StyledHeaderChat, 
     StyledInfo, 
     StyledMainChat, 
+    StyledMess, 
     StyledMessImg, 
-    StyledMessImgRight, 
-    StyledMessLeft, 
-    StyledMessRight, 
+    StyledNoConversationYet, 
     StyledTime 
 } from "./ChatPannel.styles";
 import { ChatContext } from "../../context/ChatContext";
 import { AuthContextUser } from "../../context/AuthContext";
 import UserChat from "./UserChat";
-import { useFetchRecipientUser, useFetchRecipientUserMessage } from "../../hooks/useFetchRecipientUser";
+import { useFetchReceiverUser } from "../../hooks/useFetchReceiverUser";
 
 export function ChatPannel(){
-    const {currentChat, message} = useContext(ChatContext);
+    const {currentChat, message, setNewMessage, handleSendMessage, newMessage} = useContext(ChatContext);
     const {user} = useContext(AuthContextUser);
 
-    const {recipientUserMessage} = useFetchRecipientUserMessage(currentChat, user);
 
-    console.log(message);
+    const {receiverUser} = useFetchReceiverUser(currentChat, user);
     
-    if(!recipientUserMessage){
-        return <p>No conversation yet</p>
+    if(!receiverUser){
+        return <StyledNoConversationYet>No conversation yet</StyledNoConversationYet>
     }
     return (
         <StyledChatPanel>
             <StyledHeaderChat>
-                <span>{recipientUserMessage?.data?.name}</span>
+                <span>{receiverUser?.data?.name}</span>
             </StyledHeaderChat>
             <StyledMainChat>
-                {message && message?.data?.map((item) =>
-                    {item?.senderId !== user?.data?._id ? (
-                        <StyledMessLeft>
-                            <StyledMessImg></StyledMessImg>
-                            <StyledBubble>
+                {message?.map((item, index) =>
+                    (
+                        <StyledMess key={index} ismine={item.senderId !== user?.data?._id ? 'true' : 'false'}>
+                            <StyledMessImg ismine={item.senderId !== user?.data?._id ? 'true' : 'false'}></StyledMessImg>
+                            <StyledBubble ismine={item.senderId !== user?.data?._id ? 'true' : 'false'}>
                                 <StyledInfo>
                                     <StyledTime>
                                         12:46
@@ -49,39 +46,16 @@ export function ChatPannel(){
                                 </StyledInfo>
                                 <div>{item?.text}</div>
                             </StyledBubble>
-                        </StyledMessLeft>
-                        ) : (
-                        <StyledMessRight>
-                            <StyledMessImgRight></StyledMessImgRight>
-                            <StyledBubbleRight>
-                                    <StyledInfo>
-                                        <StyledTime>
-                                            12:46
-                                        </StyledTime>
-                                    </StyledInfo>
-                                <div>{item?.text}</div>
-                            </StyledBubbleRight>
-                        </StyledMessRight>
-                        )}
+                        </StyledMess>
+                    )
                 )}
-                {/* <StyledMessRight>
-                <StyledMessImgRight></StyledMessImgRight>
-                    <StyledBubbleRight>
-                            <StyledInfo>
-                                <StyleInfoName>
-                                    HEHE
-                                </StyleInfoName>
-                                <StyledTime>
-                                    12:46
-                                </StyledTime>
-                            </StyledInfo>
-                        <div>Hi, welcome to SimpleChat! Go ahead and send me a message. 😄</div>
-                    </StyledBubbleRight>
-                </StyledMessRight> */}
             </StyledMainChat>
-            <StyleFormArea>
-                <StyledChatInput type="text"></StyledChatInput>
-                <StyledButtonSend>send</StyledButtonSend>
+            <StyleFormArea onSubmit={(e) =>{
+                e.preventDefault();
+                handleSendMessage(newMessage, user, currentChat?._id, setNewMessage)
+            }}>
+                <StyledChatInput type="text" value={newMessage} onChange={(e) => {setNewMessage(e.target.value)}}></StyledChatInput>
+                <StyledButtonSend type="submit">send</StyledButtonSend>
             </StyleFormArea>
         </StyledChatPanel>
     );

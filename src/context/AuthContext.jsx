@@ -6,7 +6,6 @@ export const AuthContextUser = createContext();
 
 export const AuthContextUserProvider = ({children}) => {
     const [user, setUser] = useState(null)
-    const navigate = useNavigate();
     //login state
     const [userLogin, setUserLogin] = useState({
         email: '',
@@ -14,7 +13,8 @@ export const AuthContextUserProvider = ({children}) => {
     });
 
     useEffect(() => {
-        setUser(JSON.parse(localStorage.getItem('userAuth')))
+        const user = localStorage.getItem('userAuth');
+        setUser(JSON.parse(user))
     }, []);
 
     //handle login user
@@ -31,7 +31,6 @@ export const AuthContextUserProvider = ({children}) => {
                 // Handle successful response then store user in localStorage, set state response user
                 localStorage.setItem('userAuth', JSON.stringify(response))
                 setUser(response);
-                navigate('/');
             })
             .catch(error => {
                 // Handle error

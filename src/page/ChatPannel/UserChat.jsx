@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useFetchRecipientUser } from "../../hooks/useFetchRecipientUser";
+import { useFetchReceiverUser } from "../../hooks/useFetchReceiverUser";
 
 const StyledAvatarUser = styled.a`
     display: block;
@@ -57,14 +57,14 @@ const StyledItemUser = styled.li`
 `;
 
 const UserChat = (chat) => {
-    const {recipientUser} = useFetchRecipientUser(chat);
+    const {receiverUser} = useFetchReceiverUser(chat);
 
     return (<div>
         <StyledItemUser role="button">
         <StyledAvatarUser></StyledAvatarUser>
                 <StyledUserChat>
                   <StyledStatus></StyledStatus>
-                  <StyledUserName>{recipientUser?.data?.name}</StyledUserName>
+                  <StyledUserName>{receiverUser?.data?.name}</StyledUserName>
         </StyledUserChat>
         </StyledItemUser>
     </div>);
