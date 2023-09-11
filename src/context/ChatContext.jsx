@@ -38,20 +38,30 @@ export const ChatContextProvider = ({children, user}) => {
 
     //send message through socket
     useEffect(() => {
-        const ReceiveId = currentChat?.members.find((id) => id !== user?.data?._id)
-
-        if(socket){
-            socket.emit("sendMessage", {...newMessage, ReceiveId, currentChat})
-        }
-
-    }, [newMessage])
+        (async () => {
+            if (socket === null) return;
+    
+            const ReceiveId = currentChat?.members.find((id) => id !== user?.data?._id);
+    
+            if (socket) {
+                try {
+                    const response = await axios.get(`http://localhost:5000/api/messages/${currentChat?._id}`);
+                    socket.emit("sendMessage", { ...newMessage, ReceiveId, response });
+                } catch (error) {
+                    // Handle errors from axios or socket.emit if needed
+                    console.error('Error:', error.message);
+                }
+            }
+        })();
+    }, [newMessage]);
 
 
     //receive message through socket
     useEffect(() => {
         if(socket === null) return;
-
-        socket.on("getMessage", res => {
+        
+        socket.on("getMessage", (res) => {
+            console.log(res);
             if(currentChat?._id !== res.currentChat._id){
                 console.log("Message not for the current chat.");
                 return;

@@ -14,12 +14,15 @@ io.on("connection", (socket) => {
         userId,
         socketId: socket.id,
     })
+
+    console.log(onlineUsers);
   })
 
   //send message
   socket.on("sendMessage", (message) => {
     const user = onlineUsers.find((user) => user.userId === message.ReceiveId);
     if(user) {
+      console.log(message);
         io.to(user.socketId).emit("getMessage", message);
     }
   })
