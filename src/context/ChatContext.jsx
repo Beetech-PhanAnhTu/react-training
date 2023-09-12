@@ -1,4 +1,5 @@
 import axios from "axios";
+import { async } from "q";
 import { createContext, useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
@@ -6,7 +7,9 @@ export const ChatContext = createContext();
 
 export const ChatContextProvider = ({children, user}) => {
     const [userChat, setChat] = useState(null);
-    // const [createChat, setCreateChat] = useState(null);
+    // list friend to create a room chat
+    const [listUserCreateChat, setListUserCreateChat] = useState(null);
+    const [isLoadingCreateChat, setIsLoadingCreateChat] = useState(null);
     const [currentChat, setCurrentChat] = useState(null);
     const [message, setMessage] = useState([]);
 
@@ -19,6 +22,29 @@ export const ChatContextProvider = ({children, user}) => {
 
     const scrollRef = useRef();
 
+    console.log(userChat);
+
+    // const [createChat, setCreateChat] = useState(null);
+
+    const HandleCreateChatUser = useCallback(async(firstId, secondId) => {
+        try {
+            setIsLoadingCreateChat(false);
+            const response = await axios.post(`http://localhost:5000/api/chats`, JSON.stringify({
+                firstId: firstId,
+                secondId: secondId,
+            }),  {
+                headers: {'Content-Type': 'application/json'},
+                withCredentials: true,
+                timeout: 10000
+            });
+            // console.log(response?.data);
+            setIsLoadingCreateChat(true)
+            setChat((prev) => [...prev, response?.data]);
+        } catch (error) {
+            // Handle errors from axios or socket.emit if needed
+            console.error('Error:', error.message);
+        }
+    }, [])
 
     //set state for scroll chat
     useEffect(() => {
@@ -98,7 +124,7 @@ export const ChatContextProvider = ({children, user}) => {
                         withCredentials: true,
                         timeout: 10000
                     });
-                    setChat(response);
+                    setChat(response?.data);
                 } catch (error) {
                     // Xử lý lỗi nếu cần
                     console.error('Error:', error);
@@ -109,31 +135,33 @@ export const ChatContextProvider = ({children, user}) => {
     }, [user]);
 
 
+    //update chat display
     const updateCurrentChat = useCallback((chat) => {
         setCurrentChat(chat);
     }, []);
 
     // 
-    // useEffect(() => {
-    //     const getUser = async () => {
-    //         const response = await axios.get(`http://localhost:5000/api/users`)
-    //         const pChats = response?.data.filter((u) => {
-    //             let isChatCreated = false;
+    useEffect(() => {
+        (async () => {
+            const response = await axios.get(`http://localhost:5000/api/users`)
+            const UserchatRoom = response?.data.filter((u) => {
+                let isChatCreated = false;
                 
-    //             if(user?.data?._id === u?._id){
-    //                 return false;
-    //             }
+                if(user?.data?._id === u?._id){
+                    return false;
+                }
 
-    //             isChatCreated = userChat?.data.some((chat) => {
-    //                 return chat?.members[0] === u?._id || chat?.members[1] === u?._id
-    //             })
-
-    //             return !isChatCreated;
-    //         })
-    //         setCreateChat(pChats);
-    //     };
-    //     getUser();
-    // }, [userChat]);
+                // //check if users existed chatrôm
+                isChatCreated = userChat?.some((chat) => {
+                    console.log(chat);
+                    return chat?.members[0] === u?._id || chat?.members[1] === u?._id
+                })
+                console.log("isChatCreated", isChatCreated);
+            })
+            setListUserCreateChat(UserchatRoom);
+        })();
+        return () => {}
+    }, [userChat]);
 
     //get message
     useEffect(() => {
@@ -186,6 +214,9 @@ export const ChatContextProvider = ({children, user}) => {
         handleSendMessage,
         newMessage,
         scrollRef,
+        listUserCreateChat,
+        HandleCreateChatUser,
+        isLoadingCreateChat
         // createChat
     }}>
         { children }
