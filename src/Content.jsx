@@ -55,6 +55,7 @@ const StyledUserItem = styled.a`
 function Content() {
   const {userChat, updateCurrentChat, scrollRef, listUserCreateChat} = useContext(ChatContext);
   const {user} = useContext(AuthContextUser);
+  console.log(userChat);
     return (
         <StyledContainer>
           {/* sidebar */}

@@ -18,13 +18,8 @@ const StyledUserItem = styled.a`
 `;
 
 const NavBarUser = () =>{
-    const {listUserCreateChat, HandleCreateChatUser, isLoadingCreateChat} = useContext(ChatContext);
+    const {listUserCreateChat, HandleCreateChatUser} = useContext(ChatContext);
     const {user} = useContext(AuthContextUser);
-    if(!isLoadingCreateChat && isLoadingCreateChat !== null){
-        return (
-            <div>loading.....</div>
-        );
-    }
     return (
         <StyledUserListCreateChat>
             { listUserCreateChat && listUserCreateChat?.map((u, index) => {

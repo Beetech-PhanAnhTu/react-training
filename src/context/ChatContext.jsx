@@ -9,9 +9,9 @@ export const ChatContextProvider = ({children, user}) => {
     const [userChat, setChat] = useState(null);
     // list friend to create a room chat
     const [listUserCreateChat, setListUserCreateChat] = useState(null);
-    const [isLoadingCreateChat, setIsLoadingCreateChat] = useState(null);
     const [currentChat, setCurrentChat] = useState(null);
     const [message, setMessage] = useState([]);
+    const [userOnline, setUserOnline] = useState(null);
 
     //send new message
     const [newMessage, setNewMessage] = useState('');
@@ -22,13 +22,10 @@ export const ChatContextProvider = ({children, user}) => {
 
     const scrollRef = useRef();
 
-    console.log(userChat);
-
-    // const [createChat, setCreateChat] = useState(null);
+    console.log(userOnline);
 
     const HandleCreateChatUser = useCallback(async(firstId, secondId) => {
         try {
-            setIsLoadingCreateChat(false);
             const response = await axios.post(`http://localhost:5000/api/chats`, JSON.stringify({
                 firstId: firstId,
                 secondId: secondId,
@@ -38,7 +35,6 @@ export const ChatContextProvider = ({children, user}) => {
                 timeout: 10000
             });
             // console.log(response?.data);
-            setIsLoadingCreateChat(true)
             setChat((prev) => [...prev, response?.data]);
         } catch (error) {
             // Handle errors from axios or socket.emit if needed
@@ -70,6 +66,14 @@ export const ChatContextProvider = ({children, user}) => {
 
         socket.emit("addNewUser", user?.data?._id);
 
+        socket.on('userOnline', (res) => {
+            setUserOnline(res)
+        })
+
+        
+        return () => {
+            socket.off('userOnline');
+        }
     }, [socket])
 
     //send message through socket
@@ -153,7 +157,6 @@ export const ChatContextProvider = ({children, user}) => {
 
                 // //check if users existed chatrôm
                 isChatCreated = userChat?.some((chat) => {
-                    console.log(chat);
                     return chat?.members[0] === u?._id || chat?.members[1] === u?._id
                 })
                 console.log("isChatCreated", isChatCreated);
@@ -216,8 +219,7 @@ export const ChatContextProvider = ({children, user}) => {
         scrollRef,
         listUserCreateChat,
         HandleCreateChatUser,
-        isLoadingCreateChat
-        // createChat
+        userOnline
     }}>
         { children }
     </ChatContext.Provider>

@@ -15,7 +15,7 @@ io.on("connection", (socket) => {
         userId,
         socketId: socket.id,
     })
-
+    io.emit("userOnline", onlineUsers)
     console.log(onlineUsers);
   })
 
@@ -34,6 +34,13 @@ io.on("connection", (socket) => {
 
   socket.on("getMessage", (message) => {
     console.log(message);
+  })
+
+  //disconnect status user
+  socket.on("disconnect", () =>{
+    console.log(socket.id);
+    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id)
+    io.emit("userOnline", onlineUsers)
   })
 });
 

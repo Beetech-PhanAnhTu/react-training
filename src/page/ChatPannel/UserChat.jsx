@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { useFetchReceiverUser } from "../../hooks/useFetchReceiverUser";
+import React, { useContext } from "react";
+import { ChatContext } from "../../context/ChatContext";
 
 const StyledAvatarUser = styled.a`
     display: block;
@@ -58,15 +60,26 @@ const StyledItemUser = styled.li`
 
 const UserChat = (chat) => {
     const {receiverUser} = useFetchReceiverUser(chat);
+    const {userOnline} = useContext(ChatContext);
 
-    return (<div>
-        <StyledItemUser role="button">
-        <StyledAvatarUser></StyledAvatarUser>
+
+
+    return (
+        <div>
+            <StyledItemUser role="button">
+                <StyledAvatarUser></StyledAvatarUser>
                 <StyledUserChat>
-                  <StyledStatus></StyledStatus>
-                  <StyledUserName>{receiverUser?.name}</StyledUserName>
-        </StyledUserChat>
-        </StyledItemUser>
-    </div>);
+                    {userOnline?.map((user) => (
+                        user?.userId === receiverUser?._id ? (
+                            <React.Fragment key={user._id}>
+                                <StyledStatus></StyledStatus>
+                            </React.Fragment>
+                        ) : null
+                    ))}
+                    <StyledUserName>{receiverUser?.name}</StyledUserName>
+                </StyledUserChat>
+            </StyledItemUser>
+        </div>
+    );
 }
 export default UserChat;
