@@ -19,7 +19,15 @@ import UserChat from "./UserChat";
 import { useFetchReceiverUser } from "../../hooks/useFetchReceiverUser";
 
 export function ChatPannel(){
-    const {currentChat, message, setNewMessage, handleSendMessage, newMessage} = useContext(ChatContext);
+    const {
+        currentChat,
+        message,
+        setNewMessage,
+        handleSendMessage,
+        newMessage,
+        scrollRef
+    } = useContext(ChatContext);
+
     const {user} = useContext(AuthContextUser);
 
 
@@ -31,7 +39,7 @@ export function ChatPannel(){
     return (
         <StyledChatPanel>
             <StyledHeaderChat>
-                <span>{receiverUser?.data?.name}</span>
+                <span>{receiverUser?.name}</span>
             </StyledHeaderChat>
             <StyledMainChat>
                 {message?.map((item, index) =>

@@ -1,9 +1,10 @@
 const { Server } = require("socket.io");
 
-const io = new Server({ cors: "http://localhost:3001" });
+const io = new Server({ cors: "*" });
 
 let onlineUsers = [];
 io.on("connection", (socket) => {
+  console.log(socket.connected)
   console.log("new connection", socket.id);
 
   //listen to a connection
@@ -23,8 +24,16 @@ io.on("connection", (socket) => {
     const user = onlineUsers.find((user) => user.userId === message.ReceiveId);
     if(user) {
       console.log(message);
-        io.to(user.socketId).emit("getMessage", message);
+      io.to(user.socketId).emit("getMessage", message);
+      // console.log(`Message sent to user with socket ID: ${user.socketId}`);
+      // console.log(message);
+    }else {
+      console.log("User not found in onlineUsers:", message.ReceiveId);
     }
+  })
+
+  socket.on("getMessage", (message) => {
+    console.log(message);
   })
 });
 

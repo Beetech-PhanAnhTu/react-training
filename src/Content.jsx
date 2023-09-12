@@ -40,10 +40,10 @@ const StyleListUser = styled.ul`
 
 
 function Content() {
-  const {userChat, updateCurrentChat} = useContext(ChatContext);
+  const {userChat, updateCurrentChat, scrollRef} = useContext(ChatContext);
   const {user} = useContext(AuthContextUser);
     return (
-        <StyledContainer>
+        <StyledContainer ref={scrollRef}>
           {/* sidebar */}
           <StyledSideBar>
             {userChat?.length < 1 ? null : (

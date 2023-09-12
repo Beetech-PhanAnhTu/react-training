@@ -64,7 +64,7 @@ const UserChat = (chat) => {
         <StyledAvatarUser></StyledAvatarUser>
                 <StyledUserChat>
                   <StyledStatus></StyledStatus>
-                  <StyledUserName>{receiverUser?.data?.name}</StyledUserName>
+                  <StyledUserName>{receiverUser?.name}</StyledUserName>
         </StyledUserChat>
         </StyledItemUser>
     </div>);

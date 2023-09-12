@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useCallback, useEffect, useReducer, useState } from "react";
+import { createContext, useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
 export const ChatContext = createContext();
@@ -13,7 +13,17 @@ export const ChatContextProvider = ({children, user}) => {
     //send new message
     const [newMessage, setNewMessage] = useState('');
 
+    const [newMessageSocket, setNewMessageSocket] = useState('');
+
     const [socket, setSocket] = useState(null);
+
+    const scrollRef = useRef();
+
+
+    //set state for scroll chat
+    useEffect(() => {
+        scrollRef.current?.scrollIntoView({behavior: 'smooth'});
+    }, [message])
 
     //initialize socket
     useEffect(() => {
@@ -40,39 +50,42 @@ export const ChatContextProvider = ({children, user}) => {
     useEffect(() => {
         (async () => {
             if (socket === null) return;
-    
             const ReceiveId = currentChat?.members.find((id) => id !== user?.data?._id);
-    
             if (socket) {
                 try {
-                    const response = await axios.get(`http://localhost:5000/api/messages/${currentChat?._id}`);
-                    socket.emit("sendMessage", { ...newMessage, ReceiveId, response });
+                    socket.emit("sendMessage", { ...newMessageSocket, ReceiveId });
                 } catch (error) {
                     // Handle errors from axios or socket.emit if needed
                     console.error('Error:', error.message);
                 }
             }
+
+            return () => {
+                socket.off("sendMessage")
+            }
         })();
-    }, [newMessage]);
+    }, [newMessageSocket]);
 
 
     //receive message through socket
     useEffect(() => {
-        if(socket === null) return;
-        
-        socket.on("getMessage", (res) => {
-            console.log(res);
-            if(currentChat?._id !== res.currentChat._id){
-                console.log("Message not for the current chat.");
-                return;
-            }
-            console.log("Message not for the current chat.1111");
-            setMessage((prev) => [...prev, res])
-        })
-
-        return () => {
-            socket.off("getMessage")
+        console.log("Inside useEffect");
+        if (socket === null) {
+            console.log("Socket is null");
+            return;
         }
+        try {
+            socket.on("getMessage", (res) => {
+                console.log("Received a message:", res);
+                setMessage((prev) => [...prev, res]);
+            });
+        } catch (error) {
+            console.log("Received error socket:", error);
+        }
+        
+        return () => {
+            socket.off("getMessage");
+        };
     }, [socket, currentChat])
 
     //fetch list user chat
@@ -132,7 +145,7 @@ export const ChatContextProvider = ({children, user}) => {
     }, [currentChat]);
 
     //send message 
-    const handleSendMessage = useCallback(async (newMessage, sender, currentChatId, setNewMessage) => {
+    const handleSendMessage = useCallback(async (newMessage, sender, currentChatId) => {
         try {
             const response = await axios.post('http://localhost:5000/api/messages', JSON.stringify({
                 chatId: currentChatId,
@@ -143,6 +156,7 @@ export const ChatContextProvider = ({children, user}) => {
                 withCredentials: true,
                 timeout: 10000
             });
+            setNewMessageSocket(response?.data);
             setMessage((prev) => [...prev, response?.data]);
             setNewMessage('');
         } catch (error) {
@@ -155,6 +169,10 @@ export const ChatContextProvider = ({children, user}) => {
                 console.error('Error:', error.message);
             }
         }
+
+        return () => {
+            socket.off("getMessage")
+        }
     }, []);
 
     
@@ -166,7 +184,8 @@ export const ChatContextProvider = ({children, user}) => {
         message,
         setNewMessage,
         handleSendMessage,
-        newMessage
+        newMessage,
+        scrollRef,
         // createChat
     }}>
         { children }

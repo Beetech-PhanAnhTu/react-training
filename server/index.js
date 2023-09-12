@@ -9,7 +9,7 @@ const app = express();
 require('dotenv').config();
 
 const corsOptions = {
-    origin:'http://localhost:4000',
+    origin:'http://localhost:9000',
     credentials: true, // Allow credentials (cookies, HTTP authentication),
 };
 app.use(express.json());

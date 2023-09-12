@@ -11,7 +11,7 @@ export const useFetchReceiverUser = (chat, user) => {
         const getUser = async () => {
             if(!ReceiveId) return null;
             const response = await axios.get(`http://localhost:5000/api/users/find/${ReceiveId}`)
-            setReceiverUser(response);
+            setReceiverUser(response?.data);
         }
         getUser();
     }, [ReceiveId])
