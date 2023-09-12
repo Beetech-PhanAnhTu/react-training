@@ -44,7 +44,7 @@ export function ChatPannel(){
             <StyledMainChat>
                 {message?.map((item, index) =>
                     (
-                        <StyledMess key={index} ismine={item.senderId !== user?.data?._id ? 'true' : 'false'}>
+                        <StyledMess ref={scrollRef} key={index} ismine={item.senderId !== user?.data?._id ? 'true' : 'false'}>
                             <StyledMessImg ismine={item.senderId !== user?.data?._id ? 'true' : 'false'}></StyledMessImg>
                             <StyledBubble ismine={item.senderId !== user?.data?._id ? 'true' : 'false'}>
                                 <StyledInfo>

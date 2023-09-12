@@ -43,7 +43,7 @@ function Content() {
   const {userChat, updateCurrentChat, scrollRef} = useContext(ChatContext);
   const {user} = useContext(AuthContextUser);
     return (
-        <StyledContainer ref={scrollRef}>
+        <StyledContainer>
           {/* sidebar */}
           <StyledSideBar>
             {userChat?.length < 1 ? null : (
