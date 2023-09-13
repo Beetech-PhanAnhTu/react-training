@@ -6,6 +6,7 @@ import Login from "./page/Login/Login";
 import { AuthContextUser } from "./context/AuthContext";
 import { ChatContextProvider, ChatContext } from "./context/ChatContext";
 import NavBarUser from "./page/NavBarUser/NavbarUser";
+import Notifications from "./page/Notification/Notifications";
 
 const StyledNavBar = styled.ul`
   list-style: none;
@@ -41,6 +42,7 @@ function App() {
           <StyledNavBar>
             <StyledItem><StyledLink to="/login">Login</StyledLink></StyledItem>
             <StyledItem><StyledLink to="/">Chat room</StyledLink></StyledItem>
+            <Notifications></Notifications>
           </StyledNavBar>
           <StyledNavBar>
             <NavBarUser></NavBarUser>

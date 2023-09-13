@@ -22,7 +22,10 @@ export const ChatContextProvider = ({children, user}) => {
 
     const scrollRef = useRef();
 
-    console.log(userOnline);
+    //notifications
+    useEffect(() => {
+        
+    }, [])
 
     const HandleCreateChatUser = useCallback(async(firstId, secondId) => {
         try {

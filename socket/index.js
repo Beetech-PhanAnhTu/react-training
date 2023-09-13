@@ -25,6 +25,7 @@ io.on("connection", (socket) => {
     if(user) {
       console.log(message);
       io.to(user.socketId).emit("getMessage", message);
+      io.to(user.socketId).emit("getNotification", message);
       // console.log(`Message sent to user with socket ID: ${user.socketId}`);
       // console.log(message);
     }else {
