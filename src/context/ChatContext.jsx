@@ -160,10 +160,10 @@ export const ChatContextProvider = ({children, user}) => {
                     return chat?.members[0] === u?._id || chat?.members[1] === u?._id
                 })
                 console.log("isChatCreated", isChatCreated);
+                return !isChatCreated;
             })
             setListUserCreateChat(UserchatRoom);
         })();
-        return () => {}
     }, [userChat]);
 
     //get message

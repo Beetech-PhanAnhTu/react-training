@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { ChatPannel } from "./page/ChatPannel/ChatPannel";
 import { AuthContextUser } from "./context/AuthContext";
@@ -80,4 +80,4 @@ function Content() {
     )
 }
 
-export default Content;
+export default memo(Content);
