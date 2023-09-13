@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { useFetchReceiverUser } from "../../hooks/useFetchReceiverUser";
+import React, { useContext, useEffect } from "react";
+import { ChatContext } from "../../context/ChatContext";
 
 const StyledAvatarUser = styled.a`
     display: block;
@@ -56,17 +58,53 @@ const StyledItemUser = styled.li`
     margin-right: 15px;
 `;
 
+const StyledNotification = styled.span`
+    position: absolute;
+    top: 33px;
+    left: 200px;
+    width: 24px;
+    height: 24px;
+    background-color: aqua;
+    text-align: center;
+    border-radius: 50%;
+    color: #fff;
+`;
+
 const UserChat = (chat) => {
     const {receiverUser} = useFetchReceiverUser(chat);
+    const {userOnline, notifications, marskUserChatSeenMessage, updateCurrentFirstChat} = useContext(ChatContext);
 
-    return (<div>
-        <StyledItemUser role="button">
-        <StyledAvatarUser></StyledAvatarUser>
+    //unread message notification
+    const unreadMessageNotification = () => {
+        return notifications?.filter((notification) => notification.isRead === false);
+    }
+    const userUnreadMessageNotification = unreadMessageNotification()?.filter((noti) => noti.senderId === receiverUser?._id);
+
+    // useEffect(() => {
+    //     updateCurrentFirstChat(chat)
+    // }, [])
+    return (
+        <div>
+            <StyledItemUser role="button" onClick={() => {
+                if(userUnreadMessageNotification.length > 0)
+                marskUserChatSeenMessage(userUnreadMessageNotification, notifications)
+            }}>
+
+                <StyledAvatarUser></StyledAvatarUser>
                 <StyledUserChat>
-                  <StyledStatus></StyledStatus>
-                  <StyledUserName>{receiverUser?.name}</StyledUserName>
-        </StyledUserChat>
-        </StyledItemUser>
-    </div>);
+                    {userOnline?.map((user) => (
+                        user?.userId === receiverUser?._id ? (
+                            <React.Fragment key={user._id}>
+                                <StyledStatus></StyledStatus>
+                            </React.Fragment>
+                        ) : null
+                    ))}
+                    {userUnreadMessageNotification?.length > 0 ? 
+                        (<StyledNotification>{userUnreadMessageNotification?.length > 0 ? userUnreadMessageNotification?.length : ''}</StyledNotification>) : null}
+                    <StyledUserName>{receiverUser?.name}</StyledUserName>
+                </StyledUserChat>
+            </StyledItemUser>
+        </div>
+    );
 }
 export default UserChat;

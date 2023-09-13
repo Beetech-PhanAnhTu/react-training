@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 import { styled } from "styled-components";
 import { ChatPannel } from "./page/ChatPannel/ChatPannel";
 import { AuthContextUser } from "./context/AuthContext";
@@ -38,9 +38,22 @@ const StyleListUser = styled.ul`
   padding: 0;
 `;
 
+const StyledUserListCreateChat = styled.ul`
+    list-style: none;
+    padding: 0;
+`;
+const StyledUserItem = styled.a`
+  cursor: pointer;
+  padding: 10px 30px;
+  background-color: aqua;
+  margin-left: 15px;
+  border-radius: 10%;
+  box-shadow: 0px 3px #888888;
+  color: #888888;
+`;
 
 function Content() {
-  const {userChat, updateCurrentChat, scrollRef} = useContext(ChatContext);
+  const {userChat, updateCurrentChat, scrollRef, listUserCreateChat} = useContext(ChatContext);
   const {user} = useContext(AuthContextUser);
     return (
         <StyledContainer>
@@ -48,7 +61,7 @@ function Content() {
           <StyledSideBar>
             {userChat?.length < 1 ? null : (
                 <StyleListUser>
-                    {userChat?.data?.map((chat, index) => (
+                    {userChat?.map((chat, index) => (
                         <div key={index} onClick={() => updateCurrentChat(chat)}>
                             <UserChat chat={chat} user={user}/>
                         </div>                   
@@ -66,4 +79,4 @@ function Content() {
     )
 }
 
-export default Content;
+export default memo(Content);

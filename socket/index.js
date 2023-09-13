@@ -15,7 +15,7 @@ io.on("connection", (socket) => {
         userId,
         socketId: socket.id,
     })
-
+    io.emit("userOnline", onlineUsers)
     console.log(onlineUsers);
   })
 
@@ -25,15 +25,22 @@ io.on("connection", (socket) => {
     if(user) {
       console.log(message);
       io.to(user.socketId).emit("getMessage", message);
-      // console.log(`Message sent to user with socket ID: ${user.socketId}`);
-      // console.log(message);
-    }else {
-      console.log("User not found in onlineUsers:", message.ReceiveId);
+      io.to(user.socketId).emit("getNotification", {
+        senderId: message.senderId,
+        isRead: false
+      });
     }
   })
 
   socket.on("getMessage", (message) => {
     console.log(message);
+  })
+
+  //disconnect status user
+  socket.on("disconnect", () =>{
+    console.log(socket.id);
+    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id)
+    io.emit("userOnline", onlineUsers)
   })
 });
 
