@@ -17,6 +17,9 @@ import { ChatContext } from "../../context/ChatContext";
 import { AuthContextUser } from "../../context/AuthContext";
 import UserChat from "./UserChat";
 import { useFetchReceiverUser } from "../../hooks/useFetchReceiverUser";
+import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import UserInfo from "../UserInfo/UserInfo";
+import Login from "../Login/Login";
 
 export function ChatPannel(){
     const {
@@ -39,7 +42,7 @@ export function ChatPannel(){
     return (
         <StyledChatPanel>
             <StyledHeaderChat>
-                <span>{receiverUser?.name}</span>
+                <Link to={"/user"}>{receiverUser?.name}</Link>
             </StyledHeaderChat>
             <StyledMainChat>
                 {message?.map((item, index) =>

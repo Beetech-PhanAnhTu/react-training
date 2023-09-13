@@ -1,6 +1,7 @@
 import axios from "axios";
 import { async } from "q";
 import { createContext, useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 
 export const ChatContext = createContext();
@@ -22,10 +23,26 @@ export const ChatContextProvider = ({children, user}) => {
 
     const scrollRef = useRef();
 
-    //notifications
+    const [notifications, setNotifications] = useState([]);
+
+    //get User Info
+    const [userInfo, setUserInfo] = useState(null);
+
+    const navigate = useNavigate();
+
+    console.log("notifications", notifications);
+
     useEffect(() => {
-        
-    }, [])
+        (async () => {
+            const getUserInfo = currentChat?.members?.find((id) => id !== user?.data?._id);
+            if(getUserInfo){
+                const response = await axios.get(`http://localhost:5000/api/users/find/${getUserInfo}`);
+                setUserInfo(response?.data);
+            }else{
+                navigate('/')
+            }
+        })();
+    }, [currentChat])
 
     const HandleCreateChatUser = useCallback(async(firstId, secondId) => {
         try {
@@ -108,18 +125,51 @@ export const ChatContextProvider = ({children, user}) => {
             return;
         }
         try {
+            console.log("trying to receive message");
             socket.on("getMessage", (res) => {
-                console.log("Received a message:", res);
+                if(currentChat?._id !== res.chatId) return;
+                
                 setMessage((prev) => [...prev, res]);
             });
+
+            //notifications
+            console.log(currentChat);
+            socket.on("getNotification", (res) => {
+                const isNotification = currentChat?.members?.some((id) => id === res.senderId)
+                if(isNotification){
+                    setNotifications((prev) => [{...res, isRead: true}, ...prev]);
+                }else{
+                    setNotifications((prev) => [res, ...prev]);
+                }
+            })
         } catch (error) {
             console.log("Received error socket:", error);
         }
         
         return () => {
             socket.off("getMessage");
+            socket.off("getNotification");
         };
     }, [socket, currentChat])
+
+    //marskUserChatSeenMessage
+    const marskUserChatSeenMessage = useCallback((userUnreadMessageNotification, notifications) => {
+        const getNotifications = notifications?.map((noti) => {
+            let notification;
+
+            userUnreadMessageNotification?.forEach(notify => {
+                if(notify?.senderId === noti?.senderId){
+                    notification = {...notify, isRead: true}
+                }else{
+                    notification = noti
+                }
+            });
+
+            return notification;
+        })
+
+        setNotifications(getNotifications);
+    }, [])
 
     //fetch list user chat
     useEffect(() => {
@@ -144,6 +194,10 @@ export const ChatContextProvider = ({children, user}) => {
 
     //update chat display
     const updateCurrentChat = useCallback((chat) => {
+        setCurrentChat(chat);
+    }, []);
+
+    const updateCurrentFirstChat = useCallback((chat) => {
         setCurrentChat(chat);
     }, []);
 
@@ -208,7 +262,6 @@ export const ChatContextProvider = ({children, user}) => {
         }
     }, []);
 
-    
 
     return <ChatContext.Provider value={{ 
         userChat,
@@ -221,7 +274,11 @@ export const ChatContextProvider = ({children, user}) => {
         scrollRef,
         listUserCreateChat,
         HandleCreateChatUser,
-        userOnline
+        userOnline,
+        userInfo,
+        notifications,
+        marskUserChatSeenMessage,
+        updateCurrentFirstChat
     }}>
         { children }
     </ChatContext.Provider>

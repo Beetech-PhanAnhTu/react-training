@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useFetchReceiverUser } from "../../hooks/useFetchReceiverUser";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { ChatContext } from "../../context/ChatContext";
 
 const StyledAvatarUser = styled.a`
@@ -58,15 +58,38 @@ const StyledItemUser = styled.li`
     margin-right: 15px;
 `;
 
+const StyledNotification = styled.span`
+    position: absolute;
+    top: 33px;
+    left: 200px;
+    width: 24px;
+    height: 24px;
+    background-color: aqua;
+    text-align: center;
+    border-radius: 50%;
+    color: #fff;
+`;
+
 const UserChat = (chat) => {
     const {receiverUser} = useFetchReceiverUser(chat);
-    const {userOnline} = useContext(ChatContext);
+    const {userOnline, notifications, marskUserChatSeenMessage, updateCurrentFirstChat} = useContext(ChatContext);
 
+    //unread message notification
+    const unreadMessageNotification = () => {
+        return notifications?.filter((notification) => notification.isRead === false);
+    }
+    const userUnreadMessageNotification = unreadMessageNotification()?.filter((noti) => noti.senderId === receiverUser?._id);
 
-
+    // useEffect(() => {
+    //     updateCurrentFirstChat(chat)
+    // }, [])
     return (
         <div>
-            <StyledItemUser role="button">
+            <StyledItemUser role="button" onClick={() => {
+                if(userUnreadMessageNotification.length > 0)
+                marskUserChatSeenMessage(userUnreadMessageNotification, notifications)
+            }}>
+
                 <StyledAvatarUser></StyledAvatarUser>
                 <StyledUserChat>
                     {userOnline?.map((user) => (
@@ -76,6 +99,8 @@ const UserChat = (chat) => {
                             </React.Fragment>
                         ) : null
                     ))}
+                    {userUnreadMessageNotification?.length > 0 ? 
+                        (<StyledNotification>{userUnreadMessageNotification?.length > 0 ? userUnreadMessageNotification?.length : ''}</StyledNotification>) : null}
                     <StyledUserName>{receiverUser?.name}</StyledUserName>
                 </StyledUserChat>
             </StyledItemUser>
