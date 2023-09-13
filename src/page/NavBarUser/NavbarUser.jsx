@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { ChatContext } from "../../context/ChatContext";
-import { useContext } from "react";
+import { memo, useContext } from "react";
 import { AuthContextUser } from "../../context/AuthContext";
 
 const StyledUserListCreateChat = styled.ul`
@@ -37,4 +37,4 @@ const NavBarUser = () =>{
     );
 }
 
-export default NavBarUser;
+export default memo(NavBarUser);

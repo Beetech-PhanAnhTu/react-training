@@ -150,14 +150,13 @@ export const ChatContextProvider = ({children, user}) => {
             const response = await axios.get(`http://localhost:5000/api/users`)
             const UserchatRoom = response?.data.filter((u) => {
                 let isChatCreated = false;
-                
                 if(user?.data?._id === u?._id){
                     return false;
                 }
 
                 // //check if users existed chatrôm
                 isChatCreated = userChat?.some((chat) => {
-                    return chat?.members[0] === u?._id || chat?.members[1] === u?._id
+                    return chat?.members.includes(u?._id)
                 })
                 console.log("isChatCreated", isChatCreated);
                 return !isChatCreated;
